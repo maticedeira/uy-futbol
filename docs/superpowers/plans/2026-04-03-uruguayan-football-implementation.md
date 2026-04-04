@@ -6,7 +6,7 @@
 
 **Architecture:** Monorepo with `/apps/scraper` (Node.js) and `/apps/web` (existing TanStack). Scraper fetches from promiedos.com.ar and stores in PostgreSQL via Drizzle. Web app reads data via TanStack Query routes.
 
-**Tech Stack:** Node.js, TypeScript, cheerio, axios, node-cron, Drizzle ORM, PostgreSQL, React, TanStack Router, TanStack Query, Tailwind CSS
+**Tech Stack:** Node.js, TypeScript, cheerio, node-cron, Drizzle ORM, PostgreSQL, React, TanStack Router, TanStack Query, Tailwind CSS
 
 ---
 
@@ -218,26 +218,26 @@ export type Standing = typeof standings.$inferSelect
 export type Promedio = typeof promedio.$inferSelect
 ```
 
-- [ ] **Step 1: Write the schema file**
+- **Step 1: Write the schema file**
 
 Create `src/db/schema.ts` with the complete Drizzle schema above.
 
-- [ ] **Step 2: Generate migrations**
+- **Step 2: Generate migrations**
 
 Run: `npm run db:generate`
 Expected: Creates migration file in `drizzle/` with CREATE TABLE statements.
 
-- [ ] **Step 3: Run migrations**
+- **Step 3: Run migrations**
 
 Run: `npm run db:migrate`
 Expected: Applies schema to PostgreSQL database.
 
-- [ ] **Step 4: Test schema**
+- **Step 4: Test schema**
 
 Verify tables exist by running: `npm run db:studio`
 Expected: Drizzle Studio opens with all tables visible.
 
-- [ ] **Step 5: Commit**
+- **Step 5: Commit**
 
 ```bash
 git add src/db/schema.ts drizzle/
@@ -258,8 +258,7 @@ git commit -m "feat: add database schema for Uruguayan football"
 - Create: `apps/scraper/src/config.ts`
 - Create: `apps/scraper/src/db/client.ts`
 - Create: `apps/scraper/src/schema/index.ts`
-
-- [ ] **Step 1: Create package.json**
+- **Step 1: Create package.json**
 
 ```json
 {
@@ -288,7 +287,7 @@ git commit -m "feat: add database schema for Uruguayan football"
 }
 ```
 
-- [ ] **Step 2: Create tsconfig.json**
+- **Step 2: Create tsconfig.json**
 
 ```json
 {
@@ -306,7 +305,7 @@ git commit -m "feat: add database schema for Uruguayan football"
 }
 ```
 
-- [ ] **Step 3: Create config.ts**
+- **Step 3: Create config.ts**
 
 ```typescript
 // apps/scraper/src/config.ts
@@ -335,7 +334,7 @@ export const TOURNAMENTS = {
 } as const
 ```
 
-- [ ] **Step 4: Create db/client.ts**
+- **Step 4: Create db/client.ts**
 
 ```typescript
 // apps/scraper/src/db/client.ts
@@ -351,7 +350,7 @@ const pool = new Pool({
 export const db = drizzle(pool, { schema })
 ```
 
-- [ ] **Step 5: Create schema/index.ts (copy from web app)**
+- **Step 5: Create schema/index.ts (copy from web app)**
 
 ```typescript
 // apps/scraper/src/schema/index.ts
@@ -359,7 +358,7 @@ export const db = drizzle(pool, { schema })
 // (Omitting for brevity - copy the full schema from Task 1)
 ```
 
-- [ ] **Step 6: Create index.ts**
+- **Step 6: Create index.ts**
 
 ```typescript
 // apps/scraper/src/index.ts
@@ -389,12 +388,12 @@ async function main() {
 main().catch(console.error)
 ```
 
-- [ ] **Step 7: Install dependencies**
+- **Step 7: Install dependencies**
 
 Run: `cd apps/scraper && npm install`
 Expected: Dependencies installed.
 
-- [ ] **Step 8: Commit**
+- **Step 8: Commit**
 
 ```bash
 git add apps/scraper/
@@ -408,8 +407,7 @@ git commit -m "feat: add scraper package structure"
 **Files:**
 
 - Create: `apps/scraper/src/utils/http.ts`
-
-- [ ] **Step 1: Write http.ts**
+- **Step 1: Write http.ts**
 
 ```typescript
 // apps/scraper/src/utils/http.ts
@@ -465,7 +463,7 @@ export const transfermarktClient = new HttpClient(
 )
 ```
 
-- [ ] **Step 2: Commit**
+- **Step 2: Commit**
 
 ```bash
 git add apps/scraper/src/utils/http.ts
@@ -480,8 +478,7 @@ git commit -m "feat: add HTTP client with retry and rate limiting"
 
 - Create: `apps/scraper/src/scrapers/teams.ts`
 - Create: `apps/scraper/src/scripts/scrape-teams.ts`
-
-- [ ] **Step 1: Write teams.ts**
+- **Step 1: Write teams.ts**
 
 ```typescript
 // apps/scraper/src/scrapers/teams.ts
@@ -560,7 +557,7 @@ export async function scrapeTeams() {
 }
 ```
 
-- [ ] **Step 2: Write scrape-teams script**
+- **Step 2: Write scrape-teams script**
 
 ```typescript
 // apps/scraper/src/scripts/scrape-teams.ts
@@ -580,12 +577,12 @@ async function main() {
 main()
 ```
 
-- [ ] **Step 3: Test team scraper**
+- **Step 3: Test team scraper**
 
 Run: `cd apps/scraper && npm run scrape:teams`
 Expected: Teams inserted into database (or error if selectors don't match actual HTML).
 
-- [ ] **Step 4: Commit**
+- **Step 4: Commit**
 
 ```bash
 git add apps/scraper/src/scrapers/teams.ts apps/scraper/src/scripts/scrape-teams.ts
@@ -601,8 +598,7 @@ git commit -m "feat: add team scraper for promiedos"
 - Create: `apps/scraper/src/scrapers/standings.ts`
 - Create: `apps/scraper/src/services/storage.ts`
 - Create: `apps/scraper/src/scripts/scrape-standings.ts`
-
-- [ ] **Step 1: Write storage.ts**
+- **Step 1: Write storage.ts**
 
 ```typescript
 // apps/scraper/src/services/storage.ts
@@ -675,7 +671,7 @@ export async function upsertPromedio(data: {
 }
 ```
 
-- [ ] **Step 2: Write standings.ts**
+- **Step 2: Write standings.ts**
 
 ```typescript
 // apps/scraper/src/scrapers/standings.ts
@@ -845,7 +841,7 @@ export async function scrapeStandings() {
 }
 ```
 
-- [ ] **Step 3: Write scrape-standings script**
+- **Step 3: Write scrape-standings script**
 
 ```typescript
 // apps/scraper/src/scripts/scrape-standings.ts
@@ -865,7 +861,7 @@ async function main() {
 main()
 ```
 
-- [ ] **Step 4: Add scrape:standings to package.json**
+- **Step 4: Add scrape:standings to package.json**
 
 ```json
 "scripts": {
@@ -874,12 +870,12 @@ main()
 }
 ```
 
-- [ ] **Step 5: Test standings scraper**
+- **Step 5: Test standings scraper**
 
 Run: `cd apps/scraper && npm run scrape:standings`
 Expected: Standings data inserted into database.
 
-- [ ] **Step 6: Commit**
+- **Step 6: Commit**
 
 ```bash
 git add apps/scraper/src/scrapers/standings.ts apps/scraper/src/services/storage.ts apps/scraper/src/scripts/scrape-standings.ts
@@ -894,8 +890,7 @@ git commit -m "feat: add standings scraper with promedio calculation"
 
 - Create: `apps/scraper/src/scrapers/matches.ts`
 - Create: `apps/scraper/src/scripts/scrape-matches.ts`
-
-- [ ] **Step 1: Write matches.ts**
+- **Step 1: Write matches.ts**
 
 ```typescript
 // apps/scraper/src/scrapers/matches.ts
@@ -1010,7 +1005,7 @@ export async function scrapeDateRange(startDate: string, endDate: string) {
 }
 ```
 
-- [ ] **Step 2: Write scrape-matches script**
+- **Step 2: Write scrape-matches script**
 
 ```typescript
 // apps/scraper/src/scripts/scrape-matches.ts
@@ -1039,7 +1034,7 @@ async function main() {
 main()
 ```
 
-- [ ] **Step 3: Add scrape:matches to package.json**
+- **Step 3: Add scrape:matches to package.json**
 
 ```json
 "scripts": {
@@ -1048,12 +1043,12 @@ main()
 }
 ```
 
-- [ ] **Step 4: Test match scraper**
+- **Step 4: Test match scraper**
 
 Run: `cd apps/scraper && npm run scrape:matches 2025-03-01`
 Expected: Matches for that date inserted into database.
 
-- [ ] **Step 5: Commit**
+- **Step 5: Commit**
 
 ```bash
 git add apps/scraper/src/scrapers/matches.ts apps/scraper/src/scripts/scrape-matches.ts
@@ -1067,8 +1062,7 @@ git commit -m "feat: add match scraper for promiedos"
 **Files:**
 
 - Create: `apps/scraper/src/scrapers/match-detail.ts`
-
-- [ ] **Step 1: Write match-detail.ts**
+- **Step 1: Write match-detail.ts**
 
 ```typescript
 // apps/scraper/src/scrapers/match-detail.ts
@@ -1209,7 +1203,7 @@ export async function scrapeMatchDetailByDate(date: string) {
 }
 ```
 
-- [ ] **Step 2: Commit**
+- **Step 2: Commit**
 
 ```bash
 git add apps/scraper/src/scrapers/match-detail.ts
@@ -1225,8 +1219,7 @@ git commit -m "feat: add match detail scraper for events and lineups"
 **Files:**
 
 - Create: `src/routes/api.standings.ts`
-
-- [ ] **Step 1: Write api.standings.ts**
+- **Step 1: Write api.standings.ts**
 
 ```typescript
 // src/routes/api.standings.ts
@@ -1320,12 +1313,12 @@ export const Route = createFileRoute('/api/standings')({
 })
 ```
 
-- [ ] **Step 2: Test endpoint**
+- **Step 2: Test endpoint**
 
 Run: `curl http://localhost:3000/api/standings?division=A&tournament=ANU`
 Expected: JSON with Primera División Anual standings.
 
-- [ ] **Step 3: Commit**
+- **Step 3: Commit**
 
 ```bash
 git add src/routes/api.standings.ts
@@ -1340,8 +1333,7 @@ git commit -m "feat: add standings API endpoint"
 
 - Create: `src/routes/api.matches.ts`
 - Create: `src/routes/api.matches.$id.ts`
-
-- [ ] **Step 1: Write api.matches.ts**
+- **Step 1: Write api.matches.ts**
 
 ```typescript
 // src/routes/api.matches.ts
@@ -1413,7 +1405,7 @@ export const Route = createFileRoute('/api/matches')({
 })
 ```
 
-- [ ] **Step 2: Write api.matches.$id.ts**
+- **Step 2: Write api.matches.$id.ts**
 
 ```typescript
 // src/routes/api.matches.$id.ts
@@ -1532,13 +1524,13 @@ export const Route = createFileRoute('/api/matches/$id')({
 })
 ```
 
-- [ ] **Step 3: Test endpoints**
+- **Step 3: Test endpoints**
 
 Run: `curl http://localhost:3000/api/matches?date=2025-03-01`
 Run: `curl http://localhost:3000/api/matches/1`
 Expected: JSON with matches data.
 
-- [ ] **Step 4: Commit**
+- **Step 4: Commit**
 
 ```bash
 git add src/routes/api.matches.ts src/routes/api.matches.\$id.ts
@@ -1553,8 +1545,7 @@ git commit -m "feat: add matches API endpoints"
 
 - Create: `src/routes/api.players.$id.ts`
 - Create: `apps/scraper/src/services/transfermarkt.ts`
-
-- [ ] **Step 1: Write transfermarkt.ts**
+- **Step 1: Write transfermarkt.ts**
 
 ```typescript
 // apps/scraper/src/services/transfermarkt.ts
@@ -1655,7 +1646,7 @@ export async function getOrFetchPlayerPhoto(
 }
 ```
 
-- [ ] **Step 2: Write api.players.$id.ts**
+- **Step 2: Write api.players.$id.ts**
 
 ```typescript
 // src/routes/api.players.$id.ts
@@ -1704,7 +1695,7 @@ export const Route = createFileRoute('/api/players/$id')({
 })
 ```
 
-- [ ] **Step 3: Commit**
+- **Step 3: Commit**
 
 ```bash
 git add apps/scraper/src/services/transfermarkt.ts src/routes/api.players.\$id.ts
@@ -1721,8 +1712,7 @@ git commit -m "feat: add Transfermarkt integration and players API"
 
 - Create: `src/components/ui/BottomNav.tsx`
 - Create: `src/components/ui/LoadingSkeleton.tsx`
-
-- [ ] **Step 1: Write BottomNav.tsx**
+- **Step 1: Write BottomNav.tsx**
 
 ```tsx
 // src/components/ui/BottomNav.tsx
@@ -1763,7 +1753,7 @@ export function BottomNav() {
 }
 ```
 
-- [ ] **Step 2: Write LoadingSkeleton.tsx**
+- **Step 2: Write LoadingSkeleton.tsx**
 
 ```tsx
 // src/components/ui/LoadingSkeleton.tsx
@@ -1813,7 +1803,7 @@ export function StandingsRowSkeleton() {
 }
 ```
 
-- [ ] **Step 3: Commit**
+- **Step 3: Commit**
 
 ```bash
 git add src/components/ui/BottomNav.tsx src/components/ui/LoadingSkeleton.tsx
@@ -1829,8 +1819,7 @@ git commit -m "feat: add base UI components"
 - Create: `src/components/MatchCard.tsx`
 - Create: `src/components/DateSelector.tsx`
 - Create: `src/components/FilterChips.tsx`
-
-- [ ] **Step 1: Write MatchCard.tsx**
+- **Step 1: Write MatchCard.tsx**
 
 ```tsx
 // src/components/MatchCard.tsx
@@ -1935,7 +1924,7 @@ export function MatchCard({ match }: MatchCardProps) {
 }
 ```
 
-- [ ] **Step 2: Write DateSelector.tsx**
+- **Step 2: Write DateSelector.tsx**
 
 ```tsx
 // src/components/DateSelector.tsx
@@ -1991,7 +1980,7 @@ export function DateSelector({
 }
 ```
 
-- [ ] **Step 3: Write FilterChips.tsx**
+- **Step 3: Write FilterChips.tsx**
 
 ```tsx
 // src/components/FilterChips.tsx
@@ -2023,7 +2012,7 @@ export function FilterChips({ options, selected, onChange }: FilterChipsProps) {
 }
 ```
 
-- [ ] **Step 4: Commit**
+- **Step 4: Commit**
 
 ```bash
 git add src/components/MatchCard.tsx src/components/DateSelector.tsx src/components/FilterChips.tsx
@@ -2038,8 +2027,7 @@ git commit -m "feat: add match components"
 
 - Create: `src/components/StandingsTable.tsx`
 - Create: `src/components/TournamentTabs.tsx`
-
-- [ ] **Step 1: Write TournamentTabs.tsx**
+- **Step 1: Write TournamentTabs.tsx**
 
 ```tsx
 // src/components/TournamentTabs.tsx
@@ -2075,7 +2063,7 @@ export function TournamentTabs({
 }
 ```
 
-- [ ] **Step 2: Write StandingsTable.tsx**
+- **Step 2: Write StandingsTable.tsx**
 
 ```tsx
 // src/components/StandingsTable.tsx
@@ -2183,7 +2171,7 @@ export function StandingsTable({
 }
 ```
 
-- [ ] **Step 3: Commit**
+- **Step 3: Commit**
 
 ```bash
 git add src/components/StandingsTable.tsx src/components/TournamentTabs.tsx
@@ -2200,8 +2188,7 @@ git commit -m "feat: add standings components"
 - Create: `src/components/EventTimeline.tsx`
 - Create: `src/components/StatsComparison.tsx`
 - Create: `src/components/PlayerModal.tsx`
-
-- [ ] **Step 1: Write FormationView.tsx**
+- **Step 1: Write FormationView.tsx**
 
 ```tsx
 // src/components/FormationView.tsx
@@ -2286,7 +2273,7 @@ export function FormationView({
 }
 ```
 
-- [ ] **Step 2: Write EventTimeline.tsx**
+- **Step 2: Write EventTimeline.tsx**
 
 ```tsx
 // src/components/EventTimeline.tsx
@@ -2385,7 +2372,7 @@ export function EventTimeline({
 }
 ```
 
-- [ ] **Step 3: Write StatsComparison.tsx**
+- **Step 3: Write StatsComparison.tsx**
 
 ```tsx
 // src/components/StatsComparison.tsx
@@ -2439,7 +2426,7 @@ export function StatsComparison({
 }
 ```
 
-- [ ] **Step 4: Write PlayerModal.tsx**
+- **Step 4: Write PlayerModal.tsx**
 
 ```tsx
 // src/components/PlayerModal.tsx
@@ -2558,7 +2545,7 @@ export function PlayerModal({ isOpen, onClose, player }: PlayerModalProps) {
 }
 ```
 
-- [ ] **Step 5: Commit**
+- **Step 5: Commit**
 
 ```bash
 git add src/components/FormationView.tsx src/components/EventTimeline.tsx src/components/StatsComparison.tsx src/components/PlayerModal.tsx
@@ -2574,8 +2561,7 @@ git commit -m "feat: add match detail components"
 **Files:**
 
 - Create: `src/routes/index.tsx`
-
-- [ ] **Step 1: Write index.tsx**
+- **Step 1: Write index.tsx**
 
 ```tsx
 // src/routes/index.tsx
@@ -2657,7 +2643,7 @@ function HomePage() {
 }
 ```
 
-- [ ] **Step 2: Commit**
+- **Step 2: Commit**
 
 ```bash
 git add src/routes/index.tsx
@@ -2671,8 +2657,7 @@ git commit -m "feat: add home/matches page"
 **Files:**
 
 - Create: `src/routes/standings.tsx`
-
-- [ ] **Step 1: Write standings.tsx**
+- **Step 1: Write standings.tsx**
 
 ```tsx
 // src/routes/standings.tsx
@@ -2774,7 +2759,7 @@ function StandingsPage() {
 }
 ```
 
-- [ ] **Step 2: Commit**
+- **Step 2: Commit**
 
 ```bash
 git add src/routes/standings.tsx
@@ -2788,8 +2773,7 @@ git commit -m "feat: add standings page"
 **Files:**
 
 - Create: `src/routes/matches.$id.tsx`
-
-- [ ] **Step 1: Write matches.$id.tsx**
+- **Step 1: Write matches.$id.tsx**
 
 ```tsx
 // src/routes/matches.$id.tsx
@@ -3001,7 +2985,7 @@ function MatchDetailPage() {
 }
 ```
 
-- [ ] **Step 2: Commit**
+- **Step 2: Commit**
 
 ```bash
 git add src/routes/matches.\$id.tsx
@@ -3019,8 +3003,7 @@ git commit -m "feat: add match detail page"
 - Modify: `src/routes/index.tsx`
 - Modify: `src/routes/standings.tsx`
 - Modify: `src/routes/matches.$id.tsx`
-
-- [ ] **Step 1: Add ErrorBoundary to routes**
+- **Step 1: Add ErrorBoundary to routes**
 
 Create a reusable error component:
 
@@ -3055,11 +3038,11 @@ export function ErrorState({
 }
 ```
 
-- [ ] **Step 2: Add error handling to pages**
+- **Step 2: Add error handling to pages**
 
 Add try/catch with error state in each page component.
 
-- [ ] **Step 3: Commit**
+- **Step 3: Commit**
 
 ```bash
 git add src/components/ui/ErrorState.tsx
@@ -3071,21 +3054,21 @@ git commit -m "feat: add error states and retry handling"
 
 ### Task 19: Final Testing
 
-- [ ] **Step 1: Test full flow**
+- **Step 1: Test full flow**
 
 1. Run scraper: `cd apps/scraper && npm run scrape:all`
 2. Start web app: `npm run dev`
 3. Navigate through all pages
 4. Test mobile responsive design
 
-- [ ] **Step 2: Run lint and typecheck**
+- **Step 2: Run lint and typecheck**
 
 ```bash
 npm run lint
 npm run check
 ```
 
-- [ ] **Step 3: Commit final changes**
+- **Step 3: Commit final changes**
 
 ```bash
 git add -A
@@ -3096,11 +3079,11 @@ git commit -m "feat: complete Uruguayan football MVP"
 
 ## Self-Review Checklist
 
-- [ ] **Spec coverage:** All requirements from spec implemented
-- [ ] **Placeholder scan:** No TBD/TODO placeholders in code
-- [ ] **Type consistency:** All types consistent across tasks
-- [ ] **File paths:** All exact paths used correctly
-- [ ] **Commands:** All commands verified with expected outputs
+- **Spec coverage:** All requirements from spec implemented
+- **Placeholder scan:** No TBD/TODO placeholders in code
+- **Type consistency:** All types consistent across tasks
+- **File paths:** All exact paths used correctly
+- **Commands:** All commands verified with expected outputs
 
 ---
 

@@ -55,8 +55,8 @@ export async function scrapeMatchDetail(
       .where(eq(players.name, playerName))
       .get()
 
-    let homeScore: number | null = null
-    let awayScore: number | null = null
+    const homeScore: number | null = null
+    const awayScore: number | null = null
 
     await db.insert(matchEvents).values({
       matchId,

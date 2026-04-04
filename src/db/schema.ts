@@ -9,6 +9,7 @@ import {
   jsonb,
   varchar,
 } from 'drizzle-orm/pg-core'
+import { relations } from 'drizzle-orm'
 
 export const divisions = pgTable('divisions', {
   id: serial('id').primaryKey(),
@@ -131,6 +132,106 @@ export const promedio = pgTable('promedio', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 })
+
+export const divisionsRelations = relations(divisions, ({ many }) => ({
+  teams: many(teams),
+  tournaments: many(tournaments),
+}))
+
+export const teamsRelations = relations(teams, ({ one, many }) => ({
+  division: one(divisions, {
+    fields: [teams.divisionId],
+    references: [divisions.id],
+  }),
+  homeMatches: many(matches, { relationName: 'homeTeam' }),
+  awayMatches: many(matches, { relationName: 'awayTeam' }),
+  players: many(players),
+}))
+
+export const tournamentsRelations = relations(tournaments, ({ one, many }) => ({
+  division: one(divisions, {
+    fields: [tournaments.divisionId],
+    references: [divisions.id],
+  }),
+  matches: many(matches),
+  standings: many(standings),
+}))
+
+export const matchesRelations = relations(matches, ({ one, many }) => ({
+  homeTeam: one(teams, {
+    fields: [matches.homeTeamId],
+    references: [teams.id],
+    relationName: 'homeTeam',
+  }),
+  awayTeam: one(teams, {
+    fields: [matches.awayTeamId],
+    references: [teams.id],
+    relationName: 'awayTeam',
+  }),
+  tournament: one(tournaments, {
+    fields: [matches.tournamentId],
+    references: [tournaments.id],
+  }),
+  events: many(matchEvents),
+  lineups: many(matchLineups),
+}))
+
+export const matchEventsRelations = relations(matchEvents, ({ one }) => ({
+  match: one(matches, {
+    fields: [matchEvents.matchId],
+    references: [matches.id],
+  }),
+  player: one(players, {
+    fields: [matchEvents.playerId],
+    references: [players.id],
+    relationName: 'eventPlayer',
+  }),
+  assist: one(players, {
+    fields: [matchEvents.assistId],
+    references: [players.id],
+    relationName: 'assistPlayer',
+  }),
+}))
+
+export const matchLineupsRelations = relations(matchLineups, ({ one }) => ({
+  match: one(matches, {
+    fields: [matchLineups.matchId],
+    references: [matches.id],
+  }),
+  team: one(teams, {
+    fields: [matchLineups.teamId],
+    references: [teams.id],
+  }),
+}))
+
+export const playersRelations = relations(players, ({ one }) => ({
+  team: one(teams, {
+    fields: [players.teamId],
+    references: [teams.id],
+  }),
+}))
+
+export const standingsRelations = relations(standings, ({ one }) => ({
+  tournament: one(tournaments, {
+    fields: [standings.tournamentId],
+    references: [tournaments.id],
+  }),
+  team: one(teams, {
+    fields: [standings.teamId],
+    references: [teams.id],
+  }),
+}))
+
+export const promedioRelations = relations(promedio, ({ one }) => ({
+  tournament: one(tournaments, {
+    fields: [promedio.tournamentId],
+    references: [tournaments.id],
+  }),
+  team: one(teams, {
+    fields: [promedio.teamId],
+    references: [teams.id],
+  }),
+}))
 
 export type Division = typeof divisions.$inferSelect
 export type Team = typeof teams.$inferSelect
