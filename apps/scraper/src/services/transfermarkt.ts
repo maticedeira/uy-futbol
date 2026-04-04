@@ -1,4 +1,3 @@
-import axios from 'axios'
 import { load } from 'cheerio'
 import { transfermarktClient } from '../utils/http.js'
 import { db } from '../db/client.js'

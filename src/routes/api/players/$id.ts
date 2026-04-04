@@ -1,5 +1,5 @@
 import { db } from '#/db'
-import { players, teams } from '#/db/schema'
+import { players } from '#/db/schema'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/api/players/$id')({
