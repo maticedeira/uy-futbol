@@ -1,0 +1,24 @@
+{
+  "name": "@ufc/scraper",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "scrape:all": "tsx src/scripts/scrape-all.ts",
+    "scrape:standings": "tsx src/scripts/scrape-standings.ts",
+    "scrape:matches": "tsx src/scripts/scrape-matches.ts",
+    "scrape:daily": "tsx src/scripts/scrape-daily.ts"
+  },
+  "dependencies": {
+    "axios": "^1.7.0",
+    "cheerio": "^1.0.0",
+    "drizzle-orm": "^0.45.1",
+    "pg": "^8.16.3",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/pg": "^8.15.6",
+    "tsx": "^4.21.0",
+    "typescript": "^5.7.2"
+  }
+}
