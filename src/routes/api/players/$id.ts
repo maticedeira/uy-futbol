@@ -6,7 +6,7 @@ export const Route = createFileRoute('/api/players/$id')({
   server: {
     handlers: {
       GET: async ({ params }) => {
-        const playerId = parseInt(params.id as string)
+        const playerId = parseInt(params.id)
 
         const player = await db.query.players.findFirst({
           where: (players, { eq }) => eq(players.id, playerId),

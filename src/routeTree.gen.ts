@@ -9,13 +9,23 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as StandingsRouteImport } from './routes/standings'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DemoDrizzleRouteImport } from './routes/demo/drizzle'
 import { Route as DemoBetterAuthRouteImport } from './routes/demo/better-auth'
+import { Route as ApiStandingsRouteImport } from './routes/api/standings'
+import { Route as ApiMatchesRouteImport } from './routes/api/matches'
 import { Route as DemoSentryTestingRouteImport } from './routes/demo/sentry.testing'
+import { Route as ApiPlayersIdRouteImport } from './routes/api/players/$id'
+import { Route as ApiMatchesIdRouteImport } from './routes/api/matches/$id'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
+const StandingsRoute = StandingsRouteImport.update({
+  id: '/standings',
+  path: '/standings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -36,10 +46,30 @@ const DemoBetterAuthRoute = DemoBetterAuthRouteImport.update({
   path: '/demo/better-auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiStandingsRoute = ApiStandingsRouteImport.update({
+  id: '/api/standings',
+  path: '/api/standings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiMatchesRoute = ApiMatchesRouteImport.update({
+  id: '/api/matches',
+  path: '/api/matches',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DemoSentryTestingRoute = DemoSentryTestingRouteImport.update({
   id: '/demo/sentry/testing',
   path: '/demo/sentry/testing',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPlayersIdRoute = ApiPlayersIdRouteImport.update({
+  id: '/api/players/$id',
+  path: '/api/players/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiMatchesIdRoute = ApiMatchesIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiMatchesRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
@@ -50,26 +80,41 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/standings': typeof StandingsRoute
+  '/api/matches': typeof ApiMatchesRouteWithChildren
+  '/api/standings': typeof ApiStandingsRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/drizzle': typeof DemoDrizzleRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/matches/$id': typeof ApiMatchesIdRoute
+  '/api/players/$id': typeof ApiPlayersIdRoute
   '/demo/sentry/testing': typeof DemoSentryTestingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/standings': typeof StandingsRoute
+  '/api/matches': typeof ApiMatchesRouteWithChildren
+  '/api/standings': typeof ApiStandingsRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/drizzle': typeof DemoDrizzleRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/matches/$id': typeof ApiMatchesIdRoute
+  '/api/players/$id': typeof ApiPlayersIdRoute
   '/demo/sentry/testing': typeof DemoSentryTestingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/standings': typeof StandingsRoute
+  '/api/matches': typeof ApiMatchesRouteWithChildren
+  '/api/standings': typeof ApiStandingsRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/drizzle': typeof DemoDrizzleRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/matches/$id': typeof ApiMatchesIdRoute
+  '/api/players/$id': typeof ApiPlayersIdRoute
   '/demo/sentry/testing': typeof DemoSentryTestingRoute
 }
 export interface FileRouteTypes {
@@ -77,39 +122,65 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/standings'
+    | '/api/matches'
+    | '/api/standings'
     | '/demo/better-auth'
     | '/demo/drizzle'
     | '/api/auth/$'
+    | '/api/matches/$id'
+    | '/api/players/$id'
     | '/demo/sentry/testing'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
+    | '/standings'
+    | '/api/matches'
+    | '/api/standings'
     | '/demo/better-auth'
     | '/demo/drizzle'
     | '/api/auth/$'
+    | '/api/matches/$id'
+    | '/api/players/$id'
     | '/demo/sentry/testing'
   id:
     | '__root__'
     | '/'
     | '/about'
+    | '/standings'
+    | '/api/matches'
+    | '/api/standings'
     | '/demo/better-auth'
     | '/demo/drizzle'
     | '/api/auth/$'
+    | '/api/matches/$id'
+    | '/api/players/$id'
     | '/demo/sentry/testing'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  StandingsRoute: typeof StandingsRoute
+  ApiMatchesRoute: typeof ApiMatchesRouteWithChildren
+  ApiStandingsRoute: typeof ApiStandingsRoute
   DemoBetterAuthRoute: typeof DemoBetterAuthRoute
   DemoDrizzleRoute: typeof DemoDrizzleRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiPlayersIdRoute: typeof ApiPlayersIdRoute
   DemoSentryTestingRoute: typeof DemoSentryTestingRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/standings': {
+      id: '/standings'
+      path: '/standings'
+      fullPath: '/standings'
+      preLoaderRoute: typeof StandingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -138,12 +209,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoBetterAuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/standings': {
+      id: '/api/standings'
+      path: '/api/standings'
+      fullPath: '/api/standings'
+      preLoaderRoute: typeof ApiStandingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/matches': {
+      id: '/api/matches'
+      path: '/api/matches'
+      fullPath: '/api/matches'
+      preLoaderRoute: typeof ApiMatchesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/demo/sentry/testing': {
       id: '/demo/sentry/testing'
       path: '/demo/sentry/testing'
       fullPath: '/demo/sentry/testing'
       preLoaderRoute: typeof DemoSentryTestingRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/api/players/$id': {
+      id: '/api/players/$id'
+      path: '/api/players/$id'
+      fullPath: '/api/players/$id'
+      preLoaderRoute: typeof ApiPlayersIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/matches/$id': {
+      id: '/api/matches/$id'
+      path: '/$id'
+      fullPath: '/api/matches/$id'
+      preLoaderRoute: typeof ApiMatchesIdRouteImport
+      parentRoute: typeof ApiMatchesRoute
     }
     '/api/auth/$': {
       id: '/api/auth/$'
@@ -155,12 +254,28 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ApiMatchesRouteChildren {
+  ApiMatchesIdRoute: typeof ApiMatchesIdRoute
+}
+
+const ApiMatchesRouteChildren: ApiMatchesRouteChildren = {
+  ApiMatchesIdRoute: ApiMatchesIdRoute,
+}
+
+const ApiMatchesRouteWithChildren = ApiMatchesRoute._addFileChildren(
+  ApiMatchesRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  StandingsRoute: StandingsRoute,
+  ApiMatchesRoute: ApiMatchesRouteWithChildren,
+  ApiStandingsRoute: ApiStandingsRoute,
   DemoBetterAuthRoute: DemoBetterAuthRoute,
   DemoDrizzleRoute: DemoDrizzleRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiPlayersIdRoute: ApiPlayersIdRoute,
   DemoSentryTestingRoute: DemoSentryTestingRoute,
 }
 export const routeTree = rootRouteImport

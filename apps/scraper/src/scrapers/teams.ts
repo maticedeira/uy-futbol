@@ -12,6 +12,7 @@ export async function scrapeTeams() {
     .from(divisions)
     .where(eq(divisions.shortName, 'A'))
   const divisionA = divisionAResult[0]
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!divisionA) throw new Error('Division A not found')
 
   const divisionBResult = await db
@@ -19,6 +20,7 @@ export async function scrapeTeams() {
     .from(divisions)
     .where(eq(divisions.shortName, 'B'))
   const divisionB = divisionBResult[0]
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!divisionB) throw new Error('Division B not found')
 
   const html = await promiedosClient.get<string>('/')

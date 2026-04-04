@@ -511,7 +511,7 @@ function RouteComponent() {
                 {isLoading.clientError && (
                   <ProgressBar loading={isLoading.clientError} />
                 )}
-                {results.clientError && !isLoading.clientError && (
+                {'clientError' in results && !isLoading.clientError && (
                   <ResultBadge
                     type={results.clientError.type}
                     spanOp={results.clientError.spanOp}
@@ -532,7 +532,7 @@ function RouteComponent() {
                 {isLoading.clientTrace && (
                   <ProgressBar loading={isLoading.clientTrace} />
                 )}
-                {results.clientTrace && !isLoading.clientTrace && (
+                {'clientTrace' in results && !isLoading.clientTrace && (
                   <ResultBadge
                     type={results.clientTrace.type}
                     spanOp={results.clientTrace.spanOp}
@@ -563,7 +563,7 @@ function RouteComponent() {
                 {isLoading.serverError && (
                   <ProgressBar loading={isLoading.serverError} />
                 )}
-                {results.serverError && !isLoading.serverError && (
+                {'serverError' in results && !isLoading.serverError && (
                   <ResultBadge
                     type={results.serverError.type}
                     spanOp={results.serverError.spanOp}
@@ -584,7 +584,7 @@ function RouteComponent() {
                 {isLoading.serverTrace && (
                   <ProgressBar loading={isLoading.serverTrace} />
                 )}
-                {results.serverTrace && !isLoading.serverTrace && (
+                {'serverTrace' in results && !isLoading.serverTrace && (
                   <ResultBadge
                     type={results.serverTrace.type}
                     spanOp={results.serverTrace.spanOp}

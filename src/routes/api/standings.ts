@@ -8,15 +8,15 @@ export const Route = createFileRoute('/api/standings')({
     handlers: {
       GET: async ({ request }) => {
         const url = new URL(request.url)
-        const division = url.searchParams.get('division') as 'A' | 'B'
+        const rawDivision = url.searchParams.get('division')
         const tournament = url.searchParams.get('tournament')
-
-        if (!division) {
+        if (!rawDivision) {
           return Response.json(
             { error: 'Division is required' },
             { status: 400 },
           )
         }
+        const division = rawDivision as 'A' | 'B'
 
         const divisionRecord = await db
           .select()

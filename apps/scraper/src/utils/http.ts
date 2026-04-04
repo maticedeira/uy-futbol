@@ -1,4 +1,4 @@
-import type { AxiosInstance } from 'axios';
+import type { AxiosInstance } from 'axios'
 import axios from 'axios'
 import { SCRAPING_DELAY_MS, MAX_RETRIES } from '../config.js'
 
