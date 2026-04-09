@@ -28,18 +28,29 @@ const TOURNAMENTS_B = [
 
 function StandingsPage() {
   const [selectedDivision, setSelectedDivision] = useState('A')
-  const [selectedTournament, setSelectedTournament] = useState('ANU')
+  const [selectedTournament, setSelectedTournament] = useState('APR')
 
   const tournaments = selectedDivision === 'A' ? TOURNAMENTS_A : TOURNAMENTS_B
 
-  const { data, isLoading } = useQuery({
+  const handleDivisionChange = (division: string) => {
+    setSelectedDivision(division)
+    setSelectedTournament(division === 'A' ? 'APR' : 'APR')
+  }
+
+  const { data, isLoading, error } = useQuery({
     queryKey: ['standings', selectedDivision, selectedTournament],
     queryFn: async () => {
       const res = await fetch(
         `/api/standings?division=${selectedDivision}&tournament=${selectedTournament}`,
       )
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`)
+      }
       return res.json()
     },
+    staleTime: 0,
+    gcTime: 1000 * 60 * 5,
+    retry: 1,
   })
 
   return (
@@ -51,7 +62,7 @@ function StandingsPage() {
           {['A', 'B'].map((d) => (
             <button
               key={d}
-              onClick={() => setSelectedDivision(d)}
+              onClick={() => handleDivisionChange(d)}
               className={`flex-1 py-2 rounded-lg font-medium transition-colors ${
                 selectedDivision === d
                   ? 'bg-blue-600 text-white'
@@ -83,9 +94,13 @@ function StandingsPage() {
             promotionZone={selectedTournament === 'ANU' ? 2 : undefined}
             relegationZone={selectedTournament === 'DES' ? 3 : undefined}
           />
+        ) : error ? (
+          <div className="text-center py-12 text-red-500">
+            Error loading standings. Please try again.
+          </div>
         ) : (
           <div className="text-center py-12 text-gray-500">
-            No standings available
+            No standings available for {selectedTournament}
           </div>
         )}
       </main>

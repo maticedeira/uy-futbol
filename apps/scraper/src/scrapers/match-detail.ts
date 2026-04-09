@@ -49,11 +49,10 @@ export async function scrapeMatchDetail(
     const description = $(el).find('.descripcion, .description').text().trim()
 
     // Find player in DB
-    const player = await db
+    const [player] = await db
       .select()
       .from(players)
       .where(eq(players.name, playerName))
-      .get()
 
     const homeScore: number | null = null
     const awayScore: number | null = null
@@ -74,11 +73,10 @@ export async function scrapeMatchDetail(
   const awayLineupSelector = '.formacion-visitante, .away-lineup'
 
   async function scrapeLineup(teamSide: 'home' | 'away', selector: string) {
-    const match = await db
+    const [match] = await db
       .select()
       .from(matches)
       .where(eq(matches.id, matchId))
-      .get()
     if (!match) return
 
     const teamId = teamSide === 'home' ? match.homeTeamId : match.awayTeamId

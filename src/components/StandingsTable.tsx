@@ -1,3 +1,5 @@
+import { getTeamLogo } from '../utils/team-logos'
+
 interface StandingsTableProps {
   standings: {
     position: number
@@ -13,7 +15,7 @@ interface StandingsTableProps {
       id: number
       name: string
       shortName: string
-      logoUrl?: string
+      logoUrl?: string | null
     }
   }[]
   promotionZone?: number
@@ -41,6 +43,7 @@ export function StandingsTable({
       {standings.map((row) => {
         const isPromotion = row.position <= promotionZone
         const isRelegation = row.position > standings.length - relegationZone
+        const logoUrl = getTeamLogo(row.team.name) || row.team.logoUrl
 
         let bgClass = ''
         if (isPromotion) bgClass = 'bg-green-50'
@@ -63,12 +66,19 @@ export function StandingsTable({
               {row.position}
             </span>
             <div className="col-span-4 flex items-center gap-2">
-              {row.team.logoUrl && (
+              {logoUrl ? (
                 <img
-                  src={row.team.logoUrl}
+                  src={logoUrl}
                   alt=""
                   className="w-5 h-5 object-contain"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none'
+                  }}
                 />
+              ) : (
+                <div className="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center text-xs text-gray-500">
+                  {row.team.shortName.substring(0, 2)}
+                </div>
               )}
               <span className="text-sm font-medium truncate">
                 {row.team.shortName}

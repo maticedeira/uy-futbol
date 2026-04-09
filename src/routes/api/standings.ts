@@ -1,5 +1,5 @@
 import { db } from '#/db'
-import { standings, teams, tournaments, divisions } from '#/db/schema'
+import { tournaments, divisions } from '#/db/schema'
 import { eq, and } from 'drizzle-orm'
 import { createFileRoute } from '@tanstack/react-router'
 
@@ -18,11 +18,10 @@ export const Route = createFileRoute('/api/standings')({
         }
         const division = rawDivision as 'A' | 'B'
 
-        const divisionRecord = await db
+        const [divisionRecord] = await db
           .select()
           .from(divisions)
           .where(eq(divisions.shortName, division))
-          .get()
 
         if (!divisionRecord) {
           return Response.json({ error: 'Division not found' }, { status: 404 })
@@ -30,7 +29,7 @@ export const Route = createFileRoute('/api/standings')({
 
         let tournamentRecord
         if (tournament) {
-          tournamentRecord = await db
+          const [record] = await db
             .select()
             .from(tournaments)
             .where(
@@ -39,13 +38,13 @@ export const Route = createFileRoute('/api/standings')({
                 eq(tournaments.shortName, tournament),
               ),
             )
-            .get()
+          tournamentRecord = record
         } else {
-          tournamentRecord = await db
+          const [record] = await db
             .select()
             .from(tournaments)
             .where(eq(tournaments.divisionId, divisionRecord.id))
-            .get()
+          tournamentRecord = record
         }
 
         if (!tournamentRecord) {
@@ -55,28 +54,34 @@ export const Route = createFileRoute('/api/standings')({
           )
         }
 
-        const standingsData = await db
-          .select({
-            position: standings.position,
-            played: standings.played,
-            won: standings.won,
-            drawn: standings.drawn,
-            lost: standings.lost,
-            goalsFor: standings.goalsFor,
-            goalsAgainst: standings.goalsAgainst,
-            goalDiff: standings.goalDiff,
-            points: standings.points,
-            team: {
-              id: teams.id,
-              name: teams.name,
-              shortName: teams.shortName,
-              logoUrl: teams.logoUrl,
-            },
-          })
-          .from(standings)
-          .innerJoin(teams, eq(standings.teamId, teams.id))
-          .where(eq(standings.tournamentId, tournamentRecord.id))
-          .orderBy(standings.position)
+        const allData = await db.execute(`
+          SELECT 
+            s.position, s.played, s.won, s.drawn, s.lost,
+            s.goals_for, s.goals_against, s.goal_diff, s.points,
+            t.id as team_id, t.name as team_name, t.short_name as team_short_name, t.logo_url as team_logo_url
+          FROM standings s
+          JOIN teams t ON s.team_id = t.id
+          WHERE s.tournament_id = ${tournamentRecord.id}
+          ORDER BY s.position
+        `)
+
+        const standingsData = (allData as any[]).map((row) => ({
+          position: row.position,
+          played: row.played,
+          won: row.won,
+          drawn: row.drawn,
+          lost: row.lost,
+          goalsFor: row.goals_for,
+          goalsAgainst: row.goals_against,
+          goalDiff: row.goal_diff,
+          points: row.points,
+          team: {
+            id: row.team_id,
+            name: row.team_name,
+            shortName: row.team_short_name,
+            logoUrl: row.team_logo_url,
+          },
+        }))
 
         return Response.json({
           tournament: {

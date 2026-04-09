@@ -8,6 +8,7 @@ import {
   decimal,
   jsonb,
   varchar,
+  unique,
 } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 
@@ -23,7 +24,7 @@ export const divisions = pgTable('divisions', {
 export const teams = pgTable('teams', {
   id: serial('id').primaryKey(),
   name: varchar('name', { length: 100 }).notNull(),
-  shortName: varchar('short_name', { length: 10 }).notNull(),
+  shortName: varchar('short_name', { length: 20 }).notNull(),
   logoUrl: text('logo_url'),
   divisionId: integer('division_id').references(() => divisions.id),
   transfermarktId: text('transfermarkt_id'),
@@ -43,7 +44,7 @@ export const players = pgTable('players', {
 export const tournaments = pgTable('tournaments', {
   id: serial('id').primaryKey(),
   name: varchar('name', { length: 50 }).notNull(),
-  shortName: varchar('short_name', { length: 10 }).notNull(),
+  shortName: varchar('short_name', { length: 20 }).notNull(),
   type: varchar('type', { length: 20 }).notNull(),
   divisionId: integer('division_id').references(() => divisions.id),
   season: varchar('season', { length: 10 }).notNull(),
@@ -52,6 +53,7 @@ export const tournaments = pgTable('tournaments', {
 
 export const matches = pgTable('matches', {
   id: serial('id').primaryKey(),
+  externalId: text('external_id'),
   date: timestamp('date').notNull(),
   homeTeamId: integer('home_team_id').references(() => teams.id),
   awayTeamId: integer('away_team_id').references(() => teams.id),
@@ -95,26 +97,32 @@ export const matchLineups = pgTable('match_lineups', {
   createdAt: timestamp('created_at').defaultNow(),
 })
 
-export const standings = pgTable('standings', {
-  id: serial('id').primaryKey(),
-  tournamentId: integer('tournament_id')
-    .references(() => tournaments.id)
-    .notNull(),
-  teamId: integer('team_id')
-    .references(() => teams.id)
-    .notNull(),
-  position: integer('position').notNull(),
-  played: integer('played').notNull().default(0),
-  won: integer('won').notNull().default(0),
-  drawn: integer('drawn').notNull().default(0),
-  lost: integer('lost').notNull().default(0),
-  goalsFor: integer('goals_for').notNull().default(0),
-  goalsAgainst: integer('goals_against').notNull().default(0),
-  goalDiff: integer('goal_diff').notNull().default(0),
-  points: integer('points').notNull().default(0),
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
-})
+export const standings = pgTable(
+  'standings',
+  {
+    id: serial('id').primaryKey(),
+    tournamentId: integer('tournament_id')
+      .references(() => tournaments.id)
+      .notNull(),
+    teamId: integer('team_id')
+      .references(() => teams.id)
+      .notNull(),
+    position: integer('position').notNull(),
+    played: integer('played').notNull().default(0),
+    won: integer('won').notNull().default(0),
+    drawn: integer('drawn').notNull().default(0),
+    lost: integer('lost').notNull().default(0),
+    goalsFor: integer('goals_for').notNull().default(0),
+    goalsAgainst: integer('goals_against').notNull().default(0),
+    goalDiff: integer('goal_diff').notNull().default(0),
+    points: integer('points').notNull().default(0),
+    createdAt: timestamp('created_at').defaultNow(),
+    updatedAt: timestamp('updated_at').defaultNow(),
+  },
+  (table) => ({
+    tournamentTeamIdx: unique().on(table.tournamentId, table.teamId),
+  }),
+)
 
 export const promedio = pgTable('promedio', {
   id: serial('id').primaryKey(),

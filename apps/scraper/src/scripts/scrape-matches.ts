@@ -1,4 +1,4 @@
-import { scrapeDateRange } from '../scrapers/matches.js'
+import { scrapeMatches } from '../scrapers/standings.js'
 
 async function main() {
   const startDate = process.argv[2]
@@ -11,7 +11,7 @@ async function main() {
   }
 
   try {
-    await scrapeDateRange(startDate, endDate)
+    await scrapeMatches(startDate)
     console.log('Match scraping completed successfully')
   } catch (error) {
     console.error('Match scraping failed:', error)

@@ -1,5 +1,6 @@
 import { db } from '../db/client.js'
-import { standings, promedio } from '../schema/index.js'
+import { standings, promedio, matches } from '../schema/index.js'
+import { eq } from 'drizzle-orm'
 
 export async function upsertStanding(data: {
   tournamentId: number
@@ -62,4 +63,53 @@ export async function upsertPromedio(data: {
         updatedAt: new Date(),
       },
     })
+}
+
+export async function upsertMatch(data: {
+  externalId: string
+  date: Date
+  homeTeamId: number
+  awayTeamId: number
+  homeScore: number | null
+  awayScore: number | null
+  status: 'scheduled' | 'live' | 'finished'
+  minute: number | null
+  tournamentId: number
+}) {
+  // Check if match exists by externalId
+  const [existing] = await db.execute(
+    `SELECT id FROM matches WHERE external_id = '${data.externalId}'`,
+  )
+
+  if (existing && (existing as any).id) {
+    // Update existing match
+    await db.execute(`
+      UPDATE matches SET
+        date = '${data.date.toISOString()}',
+        home_score = ${data.homeScore ?? 'NULL'},
+        away_score = ${data.awayScore ?? 'NULL'},
+        status = '${data.status}',
+        minute = ${data.minute ?? 'NULL'},
+        updated_at = NOW()
+      WHERE external_id = '${data.externalId}'
+    `)
+  } else {
+    // Insert new match
+    await db.execute(`
+      INSERT INTO matches (external_id, date, home_team_id, away_team_id, home_score, away_score, status, minute, tournament_id, created_at, updated_at)
+      VALUES (
+        '${data.externalId}',
+        '${data.date.toISOString()}',
+        ${data.homeTeamId},
+        ${data.awayTeamId},
+        ${data.homeScore ?? 'NULL'},
+        ${data.awayScore ?? 'NULL'},
+        '${data.status}',
+        ${data.minute ?? 'NULL'},
+        ${data.tournamentId},
+        NOW(),
+        NOW()
+      )
+    `)
+  }
 }

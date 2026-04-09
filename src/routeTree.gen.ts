@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as StandingsRouteImport } from './routes/standings'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MatchesIdRouteImport } from './routes/matches/$id'
 import { Route as DemoDrizzleRouteImport } from './routes/demo/drizzle'
 import { Route as DemoBetterAuthRouteImport } from './routes/demo/better-auth'
 import { Route as ApiStandingsRouteImport } from './routes/api/standings'
@@ -34,6 +35,11 @@ const AboutRoute = AboutRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MatchesIdRoute = MatchesIdRouteImport.update({
+  id: '/matches/$id',
+  path: '/matches/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemoDrizzleRoute = DemoDrizzleRouteImport.update({
@@ -85,6 +91,7 @@ export interface FileRoutesByFullPath {
   '/api/standings': typeof ApiStandingsRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/drizzle': typeof DemoDrizzleRoute
+  '/matches/$id': typeof MatchesIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/matches/$id': typeof ApiMatchesIdRoute
   '/api/players/$id': typeof ApiPlayersIdRoute
@@ -98,6 +105,7 @@ export interface FileRoutesByTo {
   '/api/standings': typeof ApiStandingsRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/drizzle': typeof DemoDrizzleRoute
+  '/matches/$id': typeof MatchesIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/matches/$id': typeof ApiMatchesIdRoute
   '/api/players/$id': typeof ApiPlayersIdRoute
@@ -112,6 +120,7 @@ export interface FileRoutesById {
   '/api/standings': typeof ApiStandingsRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/drizzle': typeof DemoDrizzleRoute
+  '/matches/$id': typeof MatchesIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/matches/$id': typeof ApiMatchesIdRoute
   '/api/players/$id': typeof ApiPlayersIdRoute
@@ -127,6 +136,7 @@ export interface FileRouteTypes {
     | '/api/standings'
     | '/demo/better-auth'
     | '/demo/drizzle'
+    | '/matches/$id'
     | '/api/auth/$'
     | '/api/matches/$id'
     | '/api/players/$id'
@@ -140,6 +150,7 @@ export interface FileRouteTypes {
     | '/api/standings'
     | '/demo/better-auth'
     | '/demo/drizzle'
+    | '/matches/$id'
     | '/api/auth/$'
     | '/api/matches/$id'
     | '/api/players/$id'
@@ -153,6 +164,7 @@ export interface FileRouteTypes {
     | '/api/standings'
     | '/demo/better-auth'
     | '/demo/drizzle'
+    | '/matches/$id'
     | '/api/auth/$'
     | '/api/matches/$id'
     | '/api/players/$id'
@@ -167,6 +179,7 @@ export interface RootRouteChildren {
   ApiStandingsRoute: typeof ApiStandingsRoute
   DemoBetterAuthRoute: typeof DemoBetterAuthRoute
   DemoDrizzleRoute: typeof DemoDrizzleRoute
+  MatchesIdRoute: typeof MatchesIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiPlayersIdRoute: typeof ApiPlayersIdRoute
   DemoSentryTestingRoute: typeof DemoSentryTestingRoute
@@ -193,6 +206,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/matches/$id': {
+      id: '/matches/$id'
+      path: '/matches/$id'
+      fullPath: '/matches/$id'
+      preLoaderRoute: typeof MatchesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demo/drizzle': {
@@ -274,6 +294,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiStandingsRoute: ApiStandingsRoute,
   DemoBetterAuthRoute: DemoBetterAuthRoute,
   DemoDrizzleRoute: DemoDrizzleRoute,
+  MatchesIdRoute: MatchesIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiPlayersIdRoute: ApiPlayersIdRoute,
   DemoSentryTestingRoute: DemoSentryTestingRoute,

@@ -47,23 +47,21 @@ export async function scrapeMatches(date: string) {
         ? 'finished'
         : 'scheduled'
 
-    const homeTeam = await db
+    const [homeTeam] = await db
       .select()
       .from(teams)
       .where(eq(teams.name, homeTeamName))
-      .get()
-    const awayTeam = await db
+    const [awayTeam] = await db
       .select()
       .from(teams)
       .where(eq(teams.name, awayTeamName))
-      .get()
 
     if (!homeTeam || !awayTeam) {
       console.log(`Teams not found: ${homeTeamName} vs ${awayTeamName}`)
       return
     }
 
-    const tournament = await db.select().from(tournaments).get()
+    const [tournament] = await db.select().from(tournaments)
     if (!tournament) return
 
     const matchDate = new Date(`${date}T${time || '00:00'}:00-03:00`)

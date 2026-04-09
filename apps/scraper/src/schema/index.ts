@@ -8,7 +8,9 @@ import {
   decimal,
   jsonb,
   varchar,
+  unique,
 } from 'drizzle-orm/pg-core'
+import { relations } from 'drizzle-orm'
 
 export const divisions = pgTable('divisions', {
   id: serial('id').primaryKey(),
@@ -22,7 +24,7 @@ export const divisions = pgTable('divisions', {
 export const teams = pgTable('teams', {
   id: serial('id').primaryKey(),
   name: varchar('name', { length: 100 }).notNull(),
-  shortName: varchar('short_name', { length: 10 }).notNull(),
+  shortName: varchar('short_name', { length: 20 }).notNull(),
   logoUrl: text('logo_url'),
   divisionId: integer('division_id').references(() => divisions.id),
   transfermarktId: text('transfermarkt_id'),
@@ -42,7 +44,7 @@ export const players = pgTable('players', {
 export const tournaments = pgTable('tournaments', {
   id: serial('id').primaryKey(),
   name: varchar('name', { length: 50 }).notNull(),
-  shortName: varchar('short_name', { length: 10 }).notNull(),
+  shortName: varchar('short_name', { length: 20 }).notNull(),
   type: varchar('type', { length: 20 }).notNull(),
   divisionId: integer('division_id').references(() => divisions.id),
   season: varchar('season', { length: 10 }).notNull(),
@@ -51,6 +53,7 @@ export const tournaments = pgTable('tournaments', {
 
 export const matches = pgTable('matches', {
   id: serial('id').primaryKey(),
+  externalId: text('external_id'),
   date: timestamp('date').notNull(),
   homeTeamId: integer('home_team_id').references(() => teams.id),
   awayTeamId: integer('away_team_id').references(() => teams.id),
@@ -94,26 +97,32 @@ export const matchLineups = pgTable('match_lineups', {
   createdAt: timestamp('created_at').defaultNow(),
 })
 
-export const standings = pgTable('standings', {
-  id: serial('id').primaryKey(),
-  tournamentId: integer('tournament_id')
-    .references(() => tournaments.id)
-    .notNull(),
-  teamId: integer('team_id')
-    .references(() => teams.id)
-    .notNull(),
-  position: integer('position').notNull(),
-  played: integer('played').notNull().default(0),
-  won: integer('won').notNull().default(0),
-  drawn: integer('drawn').notNull().default(0),
-  lost: integer('lost').notNull().default(0),
-  goalsFor: integer('goals_for').notNull().default(0),
-  goalsAgainst: integer('goals_against').notNull().default(0),
-  goalDiff: integer('goal_diff').notNull().default(0),
-  points: integer('points').notNull().default(0),
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
-})
+export const standings = pgTable(
+  'standings',
+  {
+    id: serial('id').primaryKey(),
+    tournamentId: integer('tournament_id')
+      .references(() => tournaments.id)
+      .notNull(),
+    teamId: integer('team_id')
+      .references(() => teams.id)
+      .notNull(),
+    position: integer('position').notNull(),
+    played: integer('played').notNull().default(0),
+    won: integer('won').notNull().default(0),
+    drawn: integer('drawn').notNull().default(0),
+    lost: integer('lost').notNull().default(0),
+    goalsFor: integer('goals_for').notNull().default(0),
+    goalsAgainst: integer('goals_against').notNull().default(0),
+    goalDiff: integer('goal_diff').notNull().default(0),
+    points: integer('points').notNull().default(0),
+    createdAt: timestamp('created_at').defaultNow(),
+    updatedAt: timestamp('updated_at').defaultNow(),
+  },
+  (table) => ({
+    tournamentTeamIdx: unique().on(table.tournamentId, table.teamId),
+  }),
+)
 
 export const promedio = pgTable('promedio', {
   id: serial('id').primaryKey(),
@@ -131,6 +140,106 @@ export const promedio = pgTable('promedio', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 })
+
+export const divisionsRelations = relations(divisions, ({ many }) => ({
+  teams: many(teams),
+  tournaments: many(tournaments),
+}))
+
+export const teamsRelations = relations(teams, ({ one, many }) => ({
+  division: one(divisions, {
+    fields: [teams.divisionId],
+    references: [divisions.id],
+  }),
+  homeMatches: many(matches, { relationName: 'homeTeam' }),
+  awayMatches: many(matches, { relationName: 'awayTeam' }),
+  players: many(players),
+}))
+
+export const tournamentsRelations = relations(tournaments, ({ one, many }) => ({
+  division: one(divisions, {
+    fields: [tournaments.divisionId],
+    references: [divisions.id],
+  }),
+  matches: many(matches),
+  standings: many(standings),
+}))
+
+export const matchesRelations = relations(matches, ({ one, many }) => ({
+  homeTeam: one(teams, {
+    fields: [matches.homeTeamId],
+    references: [teams.id],
+    relationName: 'homeTeam',
+  }),
+  awayTeam: one(teams, {
+    fields: [matches.awayTeamId],
+    references: [teams.id],
+    relationName: 'awayTeam',
+  }),
+  tournament: one(tournaments, {
+    fields: [matches.tournamentId],
+    references: [tournaments.id],
+  }),
+  events: many(matchEvents),
+  lineups: many(matchLineups),
+}))
+
+export const matchEventsRelations = relations(matchEvents, ({ one }) => ({
+  match: one(matches, {
+    fields: [matchEvents.matchId],
+    references: [matches.id],
+  }),
+  player: one(players, {
+    fields: [matchEvents.playerId],
+    references: [players.id],
+    relationName: 'eventPlayer',
+  }),
+  assist: one(players, {
+    fields: [matchEvents.assistId],
+    references: [players.id],
+    relationName: 'assistPlayer',
+  }),
+}))
+
+export const matchLineupsRelations = relations(matchLineups, ({ one }) => ({
+  match: one(matches, {
+    fields: [matchLineups.matchId],
+    references: [matches.id],
+  }),
+  team: one(teams, {
+    fields: [matchLineups.teamId],
+    references: [teams.id],
+  }),
+}))
+
+export const playersRelations = relations(players, ({ one }) => ({
+  team: one(teams, {
+    fields: [players.teamId],
+    references: [teams.id],
+  }),
+}))
+
+export const standingsRelations = relations(standings, ({ one }) => ({
+  tournament: one(tournaments, {
+    fields: [standings.tournamentId],
+    references: [tournaments.id],
+  }),
+  team: one(teams, {
+    fields: [standings.teamId],
+    references: [teams.id],
+  }),
+}))
+
+export const promedioRelations = relations(promedio, ({ one }) => ({
+  tournament: one(tournaments, {
+    fields: [promedio.tournamentId],
+    references: [tournaments.id],
+  }),
+  team: one(teams, {
+    fields: [promedio.teamId],
+    references: [teams.id],
+  }),
+}))
 
 export type Division = typeof divisions.$inferSelect
 export type Team = typeof teams.$inferSelect
